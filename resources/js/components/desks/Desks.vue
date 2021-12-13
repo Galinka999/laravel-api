@@ -1,6 +1,22 @@
 <template>
     <div class="container">
         <h1>Доски</h1>
+        <form @submit.prevent="addNewDesk">
+            <div class="form-group">
+                <input type="text" v-model="name" class="form-control" :class="{ 'is-invalid': $v.name.$error }" placeholder="Введите название доски">
+                <div class="invalid-feedback" v-if="!$v.name.required">
+                    Поле обязательно для заполнения.
+                </div>
+                <div class="invalid-feedback" v-if="!$v.name.maxLength">
+                    Максимальное количество символов {{ $v.name.$params.unique }}.
+                </div>
+            </div><br>
+            <button type="submit" class="btn btn-primary">Добавить</button>
+        </form>
+        <div class="alert alert-danger mt-3" role="alert" v-if="errored">
+            Ошибка загрузки данных! <br>
+            {{ errors[0] }}
+        </div>
             <div class="row">
                 <div class="col-lg-4 " v-for="desk in desks">
                     <div class="card mt-3">
@@ -11,9 +27,6 @@
                     </div>
                 </div>
             </div>
-        <div class="alert alert-danger" role="alert" v-if="errored">
-            Ошибка загрузки данных!
-        </div>
         <br><br>
         <div class="d-flex justify-content-center" v-if="loading">
             <div class="spinner-border text-info" role="status">
@@ -24,12 +37,15 @@
 </template>
 
 <script>
+import { required, maxLength } from 'vuelidate/lib/validators'
 export default {
     data(){
         return {
             desks: [],
             errored: false,
-            loading: true
+            errors: [],
+            loading: true,
+            name: null,
         }
     },
     mounted(){
@@ -39,6 +55,7 @@ export default {
         getAllDesks(){
             axios.get('/api/v1/desks')
                 .then(response => {
+                    this.errored = false
                     this.desks = response.data.data
                 })
                 .catch(error => {
@@ -48,7 +65,7 @@ export default {
                 .finally(() => {
                     this.loading = false
                 })
-            },
+        },
         deleteDesk(id){
             if(confirm('Вы действительно хотите удалить доску?')){
                 axios.post('/api/v1/desks/'+id, {
@@ -66,9 +83,37 @@ export default {
                         this.loading = false
                     })
             }
+        },
+        addNewDesk(){
+            this.$v.$touch()
+            if(this.$v.$anyError){
+                return;
+            }
+            axios.post('/api/v1/desks', {
+                name: this.name,
+            })
+                .then(response => {
+                    this.desks = []
+                    this.getAllDesks()
+                })
+                .catch(error => {
+                    console.log(error)
+                    if(error.response.data.message){
+                        this.errors = []
+                        this.errors.push(error.response.data.errors.name[0])
+                    }
+                    this.errored = true
+                })
+                .finally(() => {
+                    this.loading = false
+                })
         }
-
-
+    },
+    validations: {
+        name: {
+            required,
+            maxLength: maxLength(255)
+        }
     }
 }
 </script>

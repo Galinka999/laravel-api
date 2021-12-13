@@ -37,7 +37,7 @@ export default {
     methods: {
         saveName(){
             this.$v.$touch()
-            if(this.$v.$anyError()){
+            if(this.$v.$anyError){
                 return
             }
             axios.post('/api/v1/desks/'+this.deskId, {
