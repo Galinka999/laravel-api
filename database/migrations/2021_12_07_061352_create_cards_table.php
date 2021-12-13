@@ -17,7 +17,8 @@ class CreateCardsTable extends Migration
             $table->id();
             $table->string('name', 255);
             $table->foreignId('desk_list_id')
-                ->constrained();
+                ->constrained()
+                ->onDelete('cascade');
             $table->timestamps();
         });
     }

@@ -21,9 +21,9 @@ class CardSeeder extends Seeder
     {
         $faker = Factory::create();
         $data = [];
-        for($i=0; $i<3; $i++) {
+        for($i=0; $i<10; $i++) {
             $data[] = [
-                'desk_list_id' => 35,
+                'desk_list_id' => $faker->numberBetween(10,15),
                 'name' => $faker->text(mt_rand(25,45)),
             ];
         }

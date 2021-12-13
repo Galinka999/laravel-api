@@ -21,9 +21,9 @@ class TaskSeeder extends Seeder
     {
         $faker = Factory::create();
         $data = [];
-        for($i=0; $i<5; $i++) {
+        for($i=0; $i<20; $i++) {
             $data[] = [
-                'card_id' => $faker->numberBetween(86,112),
+                'card_id' => $faker->numberBetween(1,20),
                 'name' => $faker->text(mt_rand(25,45)),
             ];
         }

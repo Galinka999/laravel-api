@@ -21,9 +21,9 @@ class DeskListSeeder extends Seeder
     {
         $faker = Factory::create();
         $data = [];
-        for($i=0; $i<2; $i++) {
+        for($i=0; $i<3; $i++) {
             $data[] = [
-                    'desk_id' => 33,
+                    'desk_id' => 32,
                     'name' => $faker->text(mt_rand(15,25)),
             ];
         }
